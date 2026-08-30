@@ -75,11 +75,13 @@ class _HomeFiltersState extends ConsumerState<HomeFilters> {
             children: [
               Expanded(
                 child: DropdownButtonFormField<int?>(
-                  isExpanded: true, // Overflowバグ修正
-                  decoration: const InputDecoration(
+                  isExpanded: true,
+                  decoration: InputDecoration(
                     labelText: 'バスト絞り込み',
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surface,
                   ),
                   initialValue: state.minBust,
                   items: const [
@@ -96,11 +98,13 @@ class _HomeFiltersState extends ConsumerState<HomeFilters> {
               const SizedBox(width: 12),
               Expanded(
                 child: DropdownButtonFormField<bool>(
-                  isExpanded: true, // Overflowバグ修正
-                  decoration: const InputDecoration(
+                  isExpanded: true,
+                  decoration: InputDecoration(
                     labelText: '並び替え',
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surface,
                   ),
                   initialValue: state.isBirthDateDesc,
                   items: const [

@@ -38,64 +38,87 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.actress.name ?? '詳細'),
-        actions: [
-          IconButton(
-            icon: Icon(
-              _isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: _isFavorite ? Colors.pink : null,
-            ),
-            onPressed: _toggleFavorite,
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (widget.actress.imageUrl != null)
-              Image.network(
-                widget.actress.imageUrl!,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const SizedBox(
-                  height: 300,
-                  child: Center(child: Icon(Icons.error, size: 50)),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 300,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                widget.actress.name ?? '詳細',
+                style: const TextStyle(
+                  color: Colors.white,
+                  shadows: [Shadow(blurRadius: 4, color: Colors.black54)],
                 ),
-              )
-            else
-              const SizedBox(
-                height: 300,
-                child: Center(child: Icon(Icons.person, size: 100, color: Colors.grey)),
               ),
-            Padding(
+              background: Hero(
+                tag: 'actress_image_${widget.actress.id}',
+                child: widget.actress.imageUrl != null
+                    ? Image.network(
+                        widget.actress.imageUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => const Center(
+                          child: Icon(Icons.error, size: 50, color: Colors.grey),
+                        ),
+                      )
+                    : Container(
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        child: const Icon(Icons.person, size: 100, color: Colors.grey),
+                      ),
+              ),
+            ),
+            actions: [
+              Container(
+                margin: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                  color: Colors.black38,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    _isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: _isFavorite ? Theme.of(context).colorScheme.primary : Colors.white,
+                  ),
+                  onPressed: _toggleFavorite,
+                ),
+              ),
+            ],
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    widget.actress.name ?? '名前不明',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
                   if (widget.actress.ruby != null)
                     Text(
                       widget.actress.ruby!,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
                           ),
                     ),
-                  const SizedBox(height: 16),
-                  InfoRow(label: '生年月日', value: _formatDate(widget.actress.birthDate)),
-                  const Divider(),
-                  InfoRow(label: 'バスト', value: _formatSize(widget.actress.bust)),
-                  const Divider(),
-                  InfoRow(label: 'ウエスト', value: _formatSize(widget.actress.waist)),
-                  const Divider(),
-                  InfoRow(label: 'ヒップ', value: _formatSize(widget.actress.hip)),
-                  const Divider(),
-                  InfoRow(label: '身長', value: _formatSizeStr(widget.actress.height)),
+                  const SizedBox(height: 24),
+                  Card(
+                    elevation: 0,
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          InfoRow(label: '生年月日', value: _formatDate(widget.actress.birthDate)),
+                          const Divider(),
+                          InfoRow(label: 'バスト', value: _formatSize(widget.actress.bust)),
+                          const Divider(),
+                          InfoRow(label: 'ウエスト', value: _formatSize(widget.actress.waist)),
+                          const Divider(),
+                          InfoRow(label: 'ヒップ', value: _formatSize(widget.actress.hip)),
+                          const Divider(),
+                          InfoRow(label: '身長', value: _formatSizeStr(widget.actress.height)),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 32),
                   Text(
                     '最新の出演作品',
@@ -107,12 +130,17 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
                   if (widget.actress.dmmId != null)
                     LatestItemsSection(actressId: widget.actress.dmmId!)
                   else
-                    const Text('作品情報がありません'),
+                    const Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text('作品情報がありません'),
+                      ),
+                    ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
