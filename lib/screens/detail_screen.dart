@@ -38,109 +38,117 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 300,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                widget.actress.name ?? '詳細',
-                style: const TextStyle(
-                  color: Colors.white,
-                  shadows: [Shadow(blurRadius: 4, color: Colors.black54)],
-                ),
-              ),
-              background: Hero(
-                tag: 'actress_image_${widget.actress.id}',
-                child: widget.actress.imageUrl != null
-                    ? Image.network(
-                        widget.actress.imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Center(
-                          child: Icon(Icons.error, size: 50, color: Colors.grey),
-                        ),
-                      )
-                    : Container(
-                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                        child: const Icon(Icons.person, size: 100, color: Colors.grey),
-                      ),
-              ),
+      appBar: AppBar(
+        title: Text(widget.actress.name ?? '詳細'),
+        actions: [
+          IconButton(
+            icon: Icon(
+              _isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: _isFavorite ? Theme.of(context).colorScheme.primary : null,
             ),
-            actions: [
-              Container(
-                margin: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: Colors.black38,
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: Icon(
-                    _isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: _isFavorite ? Theme.of(context).colorScheme.primary : Colors.white,
-                  ),
-                  onPressed: _toggleFavorite,
-                ),
-              ),
-            ],
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (widget.actress.ruby != null)
-                    Text(
-                      widget.actress.ruby!,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  const SizedBox(height: 24),
-                  Card(
-                    elevation: 0,
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          InfoRow(label: '生年月日', value: _formatDate(widget.actress.birthDate)),
-                          const Divider(),
-                          InfoRow(label: 'バスト', value: _formatSize(widget.actress.bust)),
-                          const Divider(),
-                          InfoRow(label: 'ウエスト', value: _formatSize(widget.actress.waist)),
-                          const Divider(),
-                          InfoRow(label: 'ヒップ', value: _formatSize(widget.actress.hip)),
-                          const Divider(),
-                          InfoRow(label: '身長', value: _formatSizeStr(widget.actress.height)),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  Text(
-                    '最新の出演作品',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  const SizedBox(height: 16),
-                  if (widget.actress.dmmId != null)
-                    LatestItemsSection(actressId: widget.actress.dmmId!)
-                  else
-                    const Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Text('作品情報がありません'),
-                      ),
-                    ),
-                ],
-              ),
-            ),
+            onPressed: _toggleFavorite,
           ),
         ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Hero(
+                  tag: 'actress_image_${widget.actress.id}',
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: widget.actress.imageUrl != null
+                        ? Image.network(
+                            widget.actress.imageUrl!,
+                            width: 120,
+                            height: 120,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => Container(
+                              width: 120,
+                              height: 120,
+                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                              child: const Icon(Icons.error, size: 40, color: Colors.grey),
+                            ),
+                          )
+                        : Container(
+                            width: 120,
+                            height: 120,
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            child: const Icon(Icons.person, size: 60, color: Colors.grey),
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.actress.name ?? '名前不明',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      if (widget.actress.ruby != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          widget.actress.ruby!,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Card(
+              elevation: 0,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    InfoRow(label: '生年月日', value: _formatDate(widget.actress.birthDate)),
+                    const Divider(),
+                    InfoRow(label: 'バスト', value: _formatSize(widget.actress.bust)),
+                    const Divider(),
+                    InfoRow(label: 'ウエスト', value: _formatSize(widget.actress.waist)),
+                    const Divider(),
+                    InfoRow(label: 'ヒップ', value: _formatSize(widget.actress.hip)),
+                    const Divider(),
+                    InfoRow(label: '身長', value: _formatSizeStr(widget.actress.height)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+            Text(
+              '最新の出演作品',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 16),
+            if (widget.actress.dmmId != null)
+              LatestItemsSection(actressId: widget.actress.dmmId!)
+            else
+              const Card(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text('作品情報がありません'),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
