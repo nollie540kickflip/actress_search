@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'screens/home_screen.dart';
+import 'screens/auth_screen.dart';
 import 'services/isar_service.dart';
 import 'providers/database_provider.dart';
 
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const AuthScreen(),
     );
   }
 }
