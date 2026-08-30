@@ -52,6 +52,20 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
           const HomeFilters(),
+          if (!homeState.isLoading)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '検索結果: ${homeState.actresses.length}件',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+            ),
           Expanded(
             child: homeState.isLoading
                 ? const Center(child: CircularProgressIndicator())
