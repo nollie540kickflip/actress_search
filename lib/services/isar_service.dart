@@ -1,6 +1,7 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/actress.dart';
+import '../models/sort_order.dart';
 
 class IsarService {
   late Future<Isar> db;
@@ -65,7 +66,7 @@ class IsarService {
   Future<List<Actress>> searchActresses({
     String query = '',
     int? minBust,
-    bool isBirthDateDesc = true,
+    SortOrder sortOrder = SortOrder.rubyAsc,
     bool onlyFavorites = false,
   }) async {
     final isar = await db;
@@ -86,10 +87,12 @@ class IsarService {
     }
 
     // 並び替えの適用
-    if (isBirthDateDesc) {
+    if (sortOrder == SortOrder.birthDateDesc) {
       return await filterQuery.sortByBirthDateDesc().findAll();
-    } else {
+    } else if (sortOrder == SortOrder.birthDateAsc) {
       return await filterQuery.sortByBirthDate().findAll();
+    } else {
+      return await filterQuery.sortByRuby().findAll();
     }
   }
 

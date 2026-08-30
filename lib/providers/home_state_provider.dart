@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/actress.dart';
+import '../models/sort_order.dart';
 import 'database_provider.dart';
 
 class HomeState {
@@ -7,7 +8,7 @@ class HomeState {
   final bool isLoading;
   final String searchQuery;
   final int? minBust;
-  final bool isBirthDateDesc;
+  final SortOrder sortOrder;
   final bool onlyFavorites;
 
   HomeState({
@@ -15,7 +16,7 @@ class HomeState {
     this.isLoading = false,
     this.searchQuery = '',
     this.minBust,
-    this.isBirthDateDesc = true,
+    this.sortOrder = SortOrder.birthDateDesc,
     this.onlyFavorites = false,
   });
 
@@ -24,7 +25,7 @@ class HomeState {
     bool? isLoading,
     String? searchQuery,
     int? minBust,
-    bool? isBirthDateDesc,
+    SortOrder? sortOrder,
     bool? onlyFavorites,
     bool clearMinBust = false, // To allow setting minBust to null
   }) {
@@ -33,7 +34,7 @@ class HomeState {
       isLoading: isLoading ?? this.isLoading,
       searchQuery: searchQuery ?? this.searchQuery,
       minBust: clearMinBust ? null : (minBust ?? this.minBust),
-      isBirthDateDesc: isBirthDateDesc ?? this.isBirthDateDesc,
+      sortOrder: sortOrder ?? this.sortOrder,
       onlyFavorites: onlyFavorites ?? this.onlyFavorites,
     );
   }
@@ -53,7 +54,7 @@ class HomeStateNotifier extends StateNotifier<HomeState> {
     final results = await dbService.searchActresses(
       query: state.searchQuery,
       minBust: state.minBust,
-      isBirthDateDesc: state.isBirthDateDesc,
+      sortOrder: state.sortOrder,
       onlyFavorites: state.onlyFavorites,
     );
 
@@ -73,8 +74,8 @@ class HomeStateNotifier extends StateNotifier<HomeState> {
     fetchData();
   }
 
-  void updateSortOrder(bool isBirthDateDesc) {
-    state = state.copyWith(isBirthDateDesc: isBirthDateDesc);
+  void updateSortOrder(SortOrder sortOrder) {
+    state = state.copyWith(sortOrder: sortOrder);
     fetchData();
   }
 

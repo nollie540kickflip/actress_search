@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/home_state_provider.dart';
+import '../models/sort_order.dart';
 
 class HomeFilters extends ConsumerStatefulWidget {
   const HomeFilters({super.key});
@@ -97,7 +98,7 @@ class _HomeFiltersState extends ConsumerState<HomeFilters> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: DropdownButtonFormField<bool>(
+                child: DropdownButtonFormField<SortOrder>(
                   isExpanded: true,
                   decoration: InputDecoration(
                     labelText: '並び替え',
@@ -106,10 +107,11 @@ class _HomeFiltersState extends ConsumerState<HomeFilters> {
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.surface,
                   ),
-                  initialValue: state.isBirthDateDesc,
+                  initialValue: state.sortOrder,
                   items: const [
-                    DropdownMenuItem(value: true, child: Text('生年月日が新しい順')),
-                    DropdownMenuItem(value: false, child: Text('生年月日が古い順')),
+                    DropdownMenuItem(value: SortOrder.rubyAsc, child: Text('名前の五十音順')),
+                    DropdownMenuItem(value: SortOrder.birthDateDesc, child: Text('生年月日が新しい順')),
+                    DropdownMenuItem(value: SortOrder.birthDateAsc, child: Text('生年月日が古い順')),
                   ],
                   onChanged: (value) {
                     if (value != null) {
