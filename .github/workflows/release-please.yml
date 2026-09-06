@@ -45,8 +45,16 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
         run: dart run build_runner build --delete-conflicting-outputs
 
+      - name: Decode Keystore
+        if: ${{ steps.release.outputs.release_created }}
+        run: echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+
       - name: Build APK
         if: ${{ steps.release.outputs.release_created }}
+        env:
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         # 抽出したバージョンと自動インクリメントされるビルド番号を適用してビルド
         run: flutter build apk --release --build-name=${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }} --build-number=${{ github.run_number }}
 
