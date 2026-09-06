@@ -34,17 +34,17 @@ DMMの膨大な女優データベースをあなたのスマホに。
 - **アフィリエイト ID**
 
 ### 2. アプリへの設定とデータの同期
-<img src="assets/screenshots/settings.png" width="250" align="right">
 アプリを起動し、右下のタブから「設定画面」を開きます。
 取得した **API ID** と **アフィリエイト ID** を入力し、「APIキーを保存」をタップします。
 
 保存後、すぐ下にある「女優データを全件取得・更新」ボタンを押してください。最新の数万件のデータがスマホ内に同期されます（初回は数分程度かかる場合があります）。
-<br clear="all">
+
+<img src="assets/screenshots/settings.png" width="250">
 
 ### 3. さあ、検索しよう！
-<img src="assets/screenshots/home.png" width="250" align="right">
 トップ画面から、好きな条件で検索やお気に入り登録を活用してください！
-<br clear="all">
+
+<img src="assets/screenshots/home.png" width="250">
 
 ---
 
