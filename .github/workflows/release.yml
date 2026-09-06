@@ -1,0 +1,72 @@
+name: Build and Release APK
+
+on:
+  push:
+    branches:
+      - main # mainブランチにプッシュされた際にもトリガー
+    tags:
+      - 'v*' # v1.0.0 のように v から始まるタグがプッシュされたときにトリガー
+  workflow_dispatch: # GitHubの画面上から手動で実行できるようにする設定
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # リリース作成のために書き込み権限を付与
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17' # Androidビルド用のJavaバージョン
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Extract Version
+        id: version
+        run: |
+          # pubspec.yaml からバージョン番号（1.0.0 など）を抽出
+          VERSION=$(grep '^version: ' pubspec.yaml | awk '{print $2}' | cut -d '+' -f 1)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
+          
+          # タグプッシュ時とブランチプッシュ時でリリースするタグ名を分岐
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "RELEASE_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+            echo "RELEASE_TAG=v$VERSION-build.${{ github.run_number }}" >> $GITHUB_ENV
+          fi
+
+      - name: Run build_runner (Code Generation)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build APK
+        # 抽出したバージョンと自動インクリメントされるビルド番号を適用してビルド
+        run: flutter build apk --release --build-name=${{ env.VERSION }} --build-number=${{ env.BUILD_NUMBER }}
+
+      - name: Upload APK as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: Release ${{ env.RELEASE_TAG }}
+          files: build/app/outputs/flutter-apk/app-release.apk
+          generate_release_notes: true
+
