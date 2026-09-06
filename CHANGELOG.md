@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0-build.1](https://github.com/nollie540kickflip/actress_search/compare/v1.3.0-build.1...v1.4.0-build.1) (2026-09-06)
+
+
+### Features
+
+* 新しいAPKビルドのためにリリースを発行 ([6ea5f85](https://github.com/nollie540kickflip/actress_search/commit/6ea5f8542fb4efc6484dbc44b18d81a70521c653))
+
 ## [1.3.0-build.1](https://github.com/nollie540kickflip/actress_search/compare/v1.2.0-build.1...v1.3.0-build.1) (2026-09-06)
 
 
