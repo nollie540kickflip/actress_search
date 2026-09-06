@@ -2,8 +2,6 @@ name: Build and Release APK
 
 on:
   push:
-    branches:
-      - main # mainブランチにプッシュされた際にもトリガー
     tags:
       - 'v*' # v1.0.0 のように v から始まるタグがプッシュされたときにトリガー
   workflow_dispatch: # GitHubの画面上から手動で実行できるようにする設定
@@ -42,12 +40,8 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
           
-          # タグプッシュ時とブランチプッシュ時でリリースするタグ名を分岐
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            echo "RELEASE_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
-          else
-            echo "RELEASE_TAG=v$VERSION-build.${{ github.run_number }}" >> $GITHUB_ENV
-          fi
+          # Release Please が作成したタグ（例: v1.1.0）をそのまま使う
+          echo "RELEASE_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
 
       - name: Run build_runner (Code Generation)
         run: dart run build_runner build --delete-conflicting-outputs
