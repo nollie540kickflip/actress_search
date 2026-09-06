@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0-build.1](https://github.com/nollie540kickflip/actress_search/compare/v1.1.1-build.1...v1.2.0-build.1) (2026-09-06)
+
+
+### Features
+
+* **ci:** リリース用署名キーを導入しAPKの安定的なアップデートに対応 ([0f4dcfa](https://github.com/nollie540kickflip/actress_search/commit/0f4dcfaedf0316018051883f42c9fe64a83e8eab))
+
+
+### Bug Fixes
+
+* **ci:** リリース署名テスト用のダミー修正 ([319bf54](https://github.com/nollie540kickflip/actress_search/commit/319bf54d13cea87a6dea8696b90e01409b9de53f))
+
 ## [1.1.1-build.1](https://github.com/nollie540kickflip/actress_search/compare/v1.1.0-build.1...v1.1.1-build.1) (2026-09-06)
 
 
