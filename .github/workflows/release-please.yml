@@ -14,5 +14,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4
+        id: release
         with:
           release-type: dart
+
+      # 以下は Release Please がPRをマージして新しいリリース（タグ）を作成した時のみ実行されます
+      - name: Checkout repository
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        if: ${{ steps.release.outputs.release_created }}
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        if: ${{ steps.release.outputs.release_created }}
+        run: flutter pub get
+
+      - name: Run build_runner (Code Generation)
+        if: ${{ steps.release.outputs.release_created }}
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build APK
+        if: ${{ steps.release.outputs.release_created }}
+        # 抽出したバージョンと自動インクリメントされるビルド番号を適用してビルド
+        run: flutter build apk --release --build-name=${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }} --build-number=${{ github.run_number }}
+
+      - name: Upload APK to Release
+        if: ${{ steps.release.outputs.release_created }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release.outputs.tag_name }}
+          files: build/app/outputs/flutter-apk/app-release.apk
