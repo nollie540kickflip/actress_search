@@ -37,7 +37,7 @@ class DatabaseUpdateNotifier extends StateNotifier<DatabaseUpdateState> {
 
   DatabaseUpdateNotifier(this.ref) : super(DatabaseUpdateState());
 
-  Future<void> fetchAndSaveAllActresses() async {
+  Future<void> fetchAndSaveAllActresses({bool forceFullUpdate = true}) async {
     if (state.isUpdating) return;
 
     state = state.copyWith(
@@ -53,6 +53,7 @@ class DatabaseUpdateNotifier extends StateNotifier<DatabaseUpdateState> {
     const int hits = 100;
     int offset = 1;
     int totalCount = 0;
+    int localCount = 0;
     int currentCount = 0;
     bool hasNext = true;
     int retryCount = 0;
@@ -64,6 +65,11 @@ class DatabaseUpdateNotifier extends StateNotifier<DatabaseUpdateState> {
 
         if (totalCount == 0) {
           totalCount = await apiClient.fetchTotalCount();
+          localCount = await dbService.getActressCount();
+          
+          if (totalCount != localCount) {
+            forceFullUpdate = true; // APIの総件数とDBの件数が一致しない場合は全件更新
+          }
         }
 
         if (actressesToSave.isNotEmpty) {
@@ -80,8 +86,8 @@ class DatabaseUpdateNotifier extends StateNotifier<DatabaseUpdateState> {
           offset += hits;
           retryCount = 0; // 成功した場合はリトライ回数をリセット
 
-          if (!hasNewData) {
-            // 新規データが一件もなかった場合（既存データに追いついた場合）、差分更新を終了
+          if (!hasNewData && !forceFullUpdate) {
+            // 新規データが一件もなかった場合（既存データに追いついた場合）、かつ強制全件更新でない場合は差分更新を終了
             hasNext = false;
           } else if (currentCount >= totalCount) {
             hasNext = false;

@@ -22,6 +22,12 @@ class IsarService {
     return Future.value(Isar.getInstance());
   }
 
+  // データベースに保存されている女優の総数を取得
+  Future<int> getActressCount() async {
+    final isar = await db;
+    return await isar.actress.count();
+  }
+
   // バルクインサート（一括更新）。新規データがあった場合は true を返す
   Future<bool> saveActresses(List<Actress> actresses) async {
     final isar = await db;

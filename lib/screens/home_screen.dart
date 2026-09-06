@@ -2,15 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/home_state_provider.dart';
 import '../providers/settings_provider.dart';
+import '../providers/database_update_provider.dart';
 import 'settings_screen.dart';
 import '../widgets/home_filters.dart';
 import '../widgets/actress_list_tile.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final settings = ref.read(settingsProvider);
+      if (settings.isConfigured) {
+        ref.read(databaseUpdateProvider.notifier).fetchAndSaveAllActresses(forceFullUpdate: false).then((_) {
+          // 更新が終わったら一覧を再取得して画面に反映
+          ref.read(homeStateProvider.notifier).fetchData();
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final homeState = ref.watch(homeStateProvider);
     final settings = ref.watch(settingsProvider);
 
@@ -84,3 +104,4 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 }
+
