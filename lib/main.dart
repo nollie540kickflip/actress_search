@@ -9,6 +9,7 @@ import 'providers/database_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // アプリケーションのエントリーポイント
+  // 署名付きAPKビルドのテスト
   // IsarDBの初期化
   final isarService = IsarService();
   await isarService.db;
